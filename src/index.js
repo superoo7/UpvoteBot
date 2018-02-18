@@ -130,14 +130,22 @@ function upvote(
   }).catch(err => 'ERROR');
 }
 
-function checkPostAge(isoDate, maximumPostAge) {
+function checkPostAge(
+  isoDate,
+  maximumPostAge,
+  minimumPostAge
+) {
   const unixDate = new Date(
     isoDate
       .replace(/-/g, '/')
       .replace('T', ' ')
       .replace('Z', '')
   );
-  return Date.now() - unixDate > maximumPostAge;
+
+  return (
+    Date.now() - unixDate > maximumPostAge ||
+    Date.now() - unixDate < minimumPostAge
+  );
 }
 
 function weightageForPost(
@@ -164,13 +172,7 @@ function weightageForPost(
 }
 
 function beautifyDate(isoDate) {
-  const unixDate = new Date(
-    isoDate
-      .replace(/-/g, '/')
-      .replace('T', ' ')
-      .replace('Z', '')
-  );
-  return moment(unixDate).fromNow();
+  return moment(isoDate).fromNow();
 }
 
 export {

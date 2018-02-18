@@ -111,9 +111,10 @@ function upvote(steem_posting_key, steem_username, author, permlink, weightage) 
   });
 }
 
-function checkPostAge(isoDate, maximumPostAge) {
+function checkPostAge(isoDate, maximumPostAge, minimumPostAge) {
   var unixDate = new Date(isoDate.replace(/-/g, '/').replace('T', ' ').replace('Z', ''));
-  return Date.now() - unixDate > maximumPostAge;
+
+  return Date.now() - unixDate > maximumPostAge || Date.now() - unixDate < minimumPostAge;
 }
 
 function weightageForPost(postLength, minimumLength, optimumLength) {
@@ -130,8 +131,7 @@ function weightageForPost(postLength, minimumLength, optimumLength) {
 }
 
 function beautifyDate(isoDate) {
-  var unixDate = new Date(isoDate.replace(/-/g, '/').replace('T', ' ').replace('Z', ''));
-  return (0, _moment2.default)(unixDate).fromNow();
+  return (0, _moment2.default)(isoDate).fromNow();
 }
 
 exports.main = main;

@@ -19,11 +19,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // main
 var config = {
   maximumPostAge: 302400000,
+  minimumPostAge: 1800000,
   minimumLength: 250,
   optimumLength: 4000
 };
 
-(0, _index2.main)('superoo7', 'gopro-hero-6-2018-02-13-09-33-41', config).then(function (data) {
+(0, _index2.main)('superoo7', 'edi2ys68', config).then(function (data) {
   return console.log(data);
 });
 //# sourceMappingURL=main.test.js.map

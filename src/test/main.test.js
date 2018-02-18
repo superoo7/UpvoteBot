@@ -11,13 +11,11 @@ aboutTest();
 // main
 const config = {
   maximumPostAge: 302400000,
+  minimumPostAge: 1800000,
   minimumLength: 250,
   optimumLength: 4000
 };
 
-main(
-  'superoo7',
-  'gopro-hero-6-2018-02-13-09-33-41',
-  config
-).then(data => console.log(data));
-
+main('superoo7', 'edi2ys68', config).then(data =>
+  console.log(data)
+);
