@@ -8,20 +8,20 @@ import {
 
 function aboutTest() {
   console.log('==========ABOUT TEST START==========');
-  // cheetah +1
-  testFunction(
-    'superoo7',
-    'recordpool-weekly-analysis-report-2-weekly-contest-5'
-  );
-  // short post
-  testFunction(
-    'maverickfoo',
-    'so-wheres-the-wrench--2018-02-12-06-12-36'
-  );
-  testFunction(
-    'superoo7',
-    'why-sometimes-posting-on-steemit-com-is-a-good-idea-instead-of-on-other-platform'
-  );
+  // // cheetah +1
+  // testFunction(
+  //   'superoo7',
+  //   'recordpool-weekly-analysis-report-2-weekly-contest-5'
+  // );
+  // // short post
+  // testFunction(
+  //   'maverickfoo',
+  //   'so-wheres-the-wrench--2018-02-12-06-12-36'
+  // );
+  // testFunction(
+  //   'superoo7',
+  //   'why-sometimes-posting-on-steemit-com-is-a-good-idea-instead-of-on-other-platform'
+  // );
 
   console.log('========== ABOUT TEST END ==========');
 }
@@ -36,7 +36,7 @@ function testFunction(author, permlink) {
     } = data;
     if (isCheetah) {
       console.log('Voted by cheetah');
-    } else if (checkPostAge(created, 302400000)) {
+    } else if (checkPostAge(created, 302400000, 1800000)) {
       // 3.5 days
       console.log('Post too old');
     } else {

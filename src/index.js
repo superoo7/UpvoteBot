@@ -41,7 +41,6 @@ function main(author, permlink, config) {
           minimumPostAge
         )
       ) {
-        // 3.5 days
         return { msg: 'OLD_POST' };
       } else {
         let createdTime = beautifyDate(created);
@@ -148,10 +147,7 @@ function checkPostAge(
       .replace('T', ' ')
       .replace('Z', '')
   );
-  return (
-    Date.now() - unixDate > maximumPostAge ||
-    Date.now() - unixDate < minimumPostAge
-  );
+  return new Date().getTime() - unixDate > maximumPostAge;
 }
 
 function weightageForPost(
@@ -184,7 +180,7 @@ function beautifyDate(isoDate) {
       .replace('T', ' ')
       .replace('Z', '')
   );
-  return moment(unixDate).fromNow();
+  return moment(isoDate).fromNow();
 }
 
 export {
