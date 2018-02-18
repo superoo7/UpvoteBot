@@ -33,7 +33,13 @@ function main(author, permlink, config) {
       } = data;
       if (isCheetah) {
         return { msg: 'CHEETAH' };
-      } else if (checkPostAge(created, maximumPostAge)) {
+      } else if (
+        checkPostAge(
+          created,
+          maximumPostAge,
+          minimumPostAge
+        )
+      ) {
         // 3.5 days
         return { msg: 'OLD_POST' };
       } else {

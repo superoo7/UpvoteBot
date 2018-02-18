@@ -42,7 +42,7 @@
     "node": "8.9.2"
   },
   "name": "steem-upvote-util",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "dist/index.js",
   "license": "MIT"
 }
