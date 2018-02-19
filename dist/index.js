@@ -21,16 +21,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function main(author, permlink, config) {
   var maximumPostAge = config.maximumPostAge,
+      minimumPostAge = config.minimumPostAge,
       minimumLength = config.minimumLength,
       optimumLength = config.optimumLength;
 
 
   return aboutPost(author, permlink).then(function (data) {
-    console.log(data);
     if (data === 'POST_NOT_FOUND') {
       return { msg: 'POST_NOT_FOUND' };
     }
-
     var author = data.author,
         permlink = data.permlink,
         created = data.created,
@@ -40,7 +39,7 @@ function main(author, permlink, config) {
     if (isCheetah) {
       return { msg: 'CHEETAH' };
     } else if (checkPostAge(created, maximumPostAge, minimumPostAge)) {
-      // 3.5 days
+      // 3.5 days or 30 minutes
       return { msg: 'OLD_POST' };
     } else {
       var createdTime = beautifyDate(created);
@@ -59,7 +58,6 @@ function main(author, permlink, config) {
 }
 
 // ABOUT THE POST
-
 function aboutPost(author, permlink) {
   return new Promise(function (resolve, reject) {
     _steem2.default.api.getContent(author, permlink, function (err, result) {
@@ -74,9 +72,7 @@ function aboutPost(author, permlink) {
         return false;
       }).length === 0);
 
-      var bodyParse1 = (0, _regex.imageParser)(result.body);
-      var bodyParse2 = (0, _regex.linkParser)(bodyParse1);
-      var articleLength = bodyParse2.length;
+      var articleLength = (0, _regex.wordParser)(result.body);
 
       resolve({
         author: result.author,
@@ -123,10 +119,10 @@ function weightageForPost(postLength, minimumLength, optimumLength) {
     return 10 * 100;
   } else if (postLength < optimumLength) {
     // 10% ~ 80% VP
-    return parseInt((postLength - minimumLength) / (optimumLength - minimumLength) * 70 * 100 + 10 * 100);
+    return parseInt((postLength - minimumLength) / (optimumLength - minimumLength) * 10 * 100 + 10 * 100);
   } else {
-    // 80% VP
-    return 80 * 100;
+    // 20% VP
+    return 20 * 100;
   }
 }
 

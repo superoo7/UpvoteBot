@@ -5,53 +5,20 @@ import {
   weightageForPost,
   beautifyDate
 } from '../index';
+import regexTest from './regex.test';
+import { main, upvote } from '../index';
 
-function aboutTest() {
-  console.log('==========ABOUT TEST START==========');
-  // cheetah +1
-  testFunction(
-    'superoo7',
-    'recordpool-weekly-analysis-report-2-weekly-contest-5'
-  );
-  // short post
-  testFunction(
-    'maverickfoo',
-    'so-wheres-the-wrench--2018-02-12-06-12-36'
-  );
-  testFunction(
-    'superoo7',
-    'why-sometimes-posting-on-steemit-com-is-a-good-idea-instead-of-on-other-platform'
-  );
+// REGEX TEST
+regexTest();
 
-  console.log('========== ABOUT TEST END ==========');
-}
+// main
+const config = {
+  maximumPostAge: 302400000,
+  minimumPostAge: 1800000,
+  minimumLength: 250,
+  optimumLength: 4000
+};
 
-function testFunction(author, permlink) {
-  aboutPost(author, permlink).then(data => {
-    const {
-      author,
-      created,
-      isCheetah,
-      articleLength
-    } = data;
-    if (isCheetah) {
-      console.log('Voted by cheetah');
-    } else if (checkPostAge(created, 302400000)) {
-      // 3.5 days
-      console.log('Post too old');
-    } else {
-      let createdTime = beautifyDate(created);
-      let weightage = weightageForPost(
-        articleLength,
-        250,
-        4000
-      );
-      console.log(
-        `The post is ${createdTime} and will be upvoted by ${weightage /
-          100}%`
-      );
-    }
-  });
-}
-
-export { aboutTest };
+main('achraf6', 'animals-d9985c0daad41', config).then(
+  data => console.log(data)
+);

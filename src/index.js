@@ -3,27 +3,21 @@ import moment from 'moment';
 
 import 'babel-polyfill';
 
-import {
-  imageParser,
-  linkParser,
-  divParser,
-  breakLineParser
-} from './regex';
+import { wordParser } from './regex';
 
 function main(author, permlink, config) {
   const {
     maximumPostAge,
+    minimumPostAge,
     minimumLength,
     optimumLength
   } = config;
 
   return aboutPost(author, permlink)
     .then(data => {
-      console.log(data);
       if (data === 'POST_NOT_FOUND') {
         return { msg: 'POST_NOT_FOUND' };
       }
-
       const {
         author,
         permlink,
@@ -40,7 +34,7 @@ function main(author, permlink, config) {
           minimumPostAge
         )
       ) {
-        // 3.5 days
+        // 3.5 days or 30 minutes
         return { msg: 'OLD_POST' };
       } else {
         let createdTime = beautifyDate(created);
@@ -65,7 +59,6 @@ function main(author, permlink, config) {
 }
 
 // ABOUT THE POST
-
 function aboutPost(author, permlink) {
   return new Promise(function(resolve, reject) {
     steem.api.getContent(author, permlink, function(
@@ -90,9 +83,7 @@ function aboutPost(author, permlink) {
         }).length === 0
       );
 
-      const bodyParse1 = imageParser(result.body);
-      const bodyParse2 = linkParser(bodyParse1);
-      const articleLength = bodyParse2.length;
+      const articleLength = wordParser(result.body);
 
       resolve({
         author: result.author,
@@ -167,13 +158,13 @@ function weightageForPost(
     return parseInt(
       (postLength - minimumLength) /
         (optimumLength - minimumLength) *
-        70 *
+        10 *
         100 +
         10 * 100
     );
   } else {
-    // 80% VP
-    return 80 * 100;
+    // 20% VP
+    return 20 * 100;
   }
 }
 
