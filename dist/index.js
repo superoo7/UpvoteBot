@@ -23,21 +23,32 @@ function main(author, permlink, config) {
   var maximumPostAge = config.maximumPostAge,
       minimumPostAge = config.minimumPostAge,
       minimumLength = config.minimumLength,
-      optimumLength = config.optimumLength;
+      optimumLength = config.optimumLength,
+      _config$unwantedTags = config.unwantedTags,
+      unwantedTags = _config$unwantedTags === undefined ? [] : _config$unwantedTags,
+      _config$requiredTags = config.requiredTags,
+      requiredTags = _config$requiredTags === undefined ? [] : _config$requiredTags;
 
 
-  return aboutPost(author, permlink).then(function (data) {
+  return aboutPost(author, permlink, unwantedTags, requiredTags).then(function (data) {
     if (data === 'POST_NOT_FOUND') {
       return { msg: 'POST_NOT_FOUND' };
     }
+    console.log(data);
     var author = data.author,
         permlink = data.permlink,
         created = data.created,
         isCheetah = data.isCheetah,
+        isUnwantedTagExist = data.isUnwantedTagExist,
+        isRequiredTagNotExist = data.isRequiredTagNotExist,
         articleLength = data.articleLength;
 
     if (isCheetah) {
       return { msg: 'CHEETAH' };
+    } else if (isUnwantedTagExist) {
+      return { msg: 'UNWANTED_TAGS' };
+    } else if (isRequiredTagNotExist) {
+      return { msg: 'REQUIRED_TAGS' };
     } else if (checkPostAge(created, maximumPostAge, minimumPostAge)) {
       // 3.5 days or 30 minutes
       return { msg: 'OLD_POST' };
@@ -59,11 +70,31 @@ function main(author, permlink, config) {
 
 // ABOUT THE POST
 function aboutPost(author, permlink) {
+  var unwantedTags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var requiredTags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
   return new Promise(function (resolve, reject) {
     _steem2.default.api.getContent(author, permlink, function (err, result) {
       if (err || result.id === 0 && result.author === '' && result.permlink === '') {
         reject('ERROR');
       }
+
+      var tags = JSON.parse(result.json_metadata).tags;
+      var isUnwantedTagExist = !(tags.filter(function (tag) {
+        if (unwantedTags.includes(tag)) {
+          return true;
+        }
+        return false;
+      }).length === 0);
+      console.log(requiredTags);
+      console.log(tags);
+      var isRequiredTagNotExist = !(tags.filter(function (tag) {
+        if (requiredTags.includes(tag)) {
+          console.log(tag);
+          return true;
+        }
+        return false;
+      }).length === requiredTags.length);
 
       var isCheetah = !(result.active_votes.filter(function (data) {
         if (data.voter === 'cheetah') {
@@ -79,6 +110,8 @@ function aboutPost(author, permlink) {
         permlink: permlink,
         created: result.created,
         isCheetah: isCheetah,
+        isUnwantedTagExist: isUnwantedTagExist,
+        isRequiredTagNotExist: isRequiredTagNotExist,
         articleLength: articleLength
       });
     });

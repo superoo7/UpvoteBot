@@ -11,6 +11,9 @@ function regexTest() {
     );
     console.log('success');
     console.log(
+      wordParser('既然已来到Perth了。 Hahaha world')
+    );
+    console.log(
       wordParser(`
 第一次没有和家人庆祝华人新年。既然已来到Perth了，那就去我爸的朋友家庆祝！
 顺便试一下我的新的Go Pro 😁

@@ -10,23 +10,37 @@ function main(author, permlink, config) {
     maximumPostAge,
     minimumPostAge,
     minimumLength,
-    optimumLength
+    optimumLength,
+    unwantedTags = [],
+    requiredTags = []
   } = config;
 
-  return aboutPost(author, permlink)
+  return aboutPost(
+    author,
+    permlink,
+    unwantedTags,
+    requiredTags
+  )
     .then(data => {
       if (data === 'POST_NOT_FOUND') {
         return { msg: 'POST_NOT_FOUND' };
       }
+      console.log(data);
       const {
         author,
         permlink,
         created,
         isCheetah,
+        isUnwantedTagExist,
+        isRequiredTagNotExist,
         articleLength
       } = data;
       if (isCheetah) {
         return { msg: 'CHEETAH' };
+      } else if (isUnwantedTagExist) {
+        return { msg: 'UNWANTED_TAGS' };
+      } else if (isRequiredTagNotExist) {
+        return { msg: 'REQUIRED_TAGS' };
       } else if (
         checkPostAge(
           created,
@@ -59,7 +73,12 @@ function main(author, permlink, config) {
 }
 
 // ABOUT THE POST
-function aboutPost(author, permlink) {
+function aboutPost(
+  author,
+  permlink,
+  unwantedTags = [],
+  requiredTags = []
+) {
   return new Promise(function(resolve, reject) {
     steem.api.getContent(author, permlink, function(
       err,
@@ -73,6 +92,27 @@ function aboutPost(author, permlink) {
       ) {
         reject('ERROR');
       }
+
+      let tags = JSON.parse(result.json_metadata).tags;
+      const isUnwantedTagExist = !(
+        tags.filter(tag => {
+          if (unwantedTags.includes(tag)) {
+            return true;
+          }
+          return false;
+        }).length === 0
+      );
+      console.log(requiredTags);
+      console.log(tags);
+      const isRequiredTagNotExist = !(
+        tags.filter(tag => {
+          if (requiredTags.includes(tag)) {
+            console.log(tag);
+            return true;
+          }
+          return false;
+        }).length === requiredTags.length
+      );
 
       const isCheetah = !(
         result.active_votes.filter(data => {
@@ -90,6 +130,8 @@ function aboutPost(author, permlink) {
         permlink,
         created: result.created,
         isCheetah,
+        isUnwantedTagExist,
+        isRequiredTagNotExist,
         articleLength
       });
     });

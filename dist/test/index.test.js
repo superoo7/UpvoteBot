@@ -20,10 +20,12 @@ var config = {
   maximumPostAge: 302400000,
   minimumPostAge: 1800000,
   minimumLength: 250,
-  optimumLength: 4000
+  optimumLength: 4000,
+  unwantedTags: ['steepshot', 'dmania', 'decentmeme'],
+  requiredTags: ['teammalaysia']
 };
 
-(0, _index.main)('achraf6', 'animals-d9985c0daad41', config).then(function (data) {
+(0, _index.main)('superoo7', 'my-heart-will-go-on-harmonica-version', config).then(function (data) {
   return console.log(data);
 });
 //# sourceMappingURL=index.test.js.map
