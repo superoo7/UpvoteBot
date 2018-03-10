@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.beautifyDate = exports.weightageForPost = exports.checkPostAge = exports.upvote = exports.aboutPost = exports.main = undefined;
+exports.getComment = exports.beautifyDate = exports.weightageForPost = exports.checkPostAge = exports.upvote = exports.aboutPost = exports.main = undefined;
 
 var _steem = require('steem');
 
@@ -12,6 +12,10 @@ var _steem2 = _interopRequireDefault(_steem);
 var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
+
+var _axios = require('axios');
+
+var _axios2 = _interopRequireDefault(_axios);
 
 require('babel-polyfill');
 
@@ -96,6 +100,7 @@ function aboutPost(author, permlink) {
         return false;
       }).length === requiredTags.length);
 
+      console.log(result.children);
       var isCheetah = !(result.active_votes.filter(function (data) {
         if (data.voter === 'cheetah') {
           return true;
@@ -148,19 +153,25 @@ function checkPostAge(isoDate, maximumPostAge, minimumPostAge) {
 
 function weightageForPost(postLength, minimumLength, optimumLength) {
   if (postLength < minimumLength) {
-    // 10% VP
-    return 10 * 100;
+    // 0% VP
+    return 0;
   } else if (postLength < optimumLength) {
-    // 10% ~ 80% VP
-    return parseInt((postLength - minimumLength) / (optimumLength - minimumLength) * 10 * 100 + 10 * 100);
+    // 15% ~ 80% VP
+    return parseInt((postLength - minimumLength) / (optimumLength - minimumLength) * 15 * 100 + 15 * 100);
   } else {
-    // 20% VP
-    return 20 * 100;
+    // 25% VP
+    return 30 * 100;
   }
 }
 
 function beautifyDate(isoDate) {
   return (0, _moment2.default)(isoDate).fromNow();
+}
+
+function getComment(author, permlink) {
+  return _axios2.default.get('https://api.steemjs.com/get_content_replies?author=' + author + '&permlink=' + permlink).then(function (data) {
+    return data.data;
+  });
 }
 
 exports.main = main;
@@ -169,4 +180,5 @@ exports.upvote = upvote;
 exports.checkPostAge = checkPostAge;
 exports.weightageForPost = weightageForPost;
 exports.beautifyDate = beautifyDate;
+exports.getComment = getComment;
 //# sourceMappingURL=index.js.map
