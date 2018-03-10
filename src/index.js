@@ -1,5 +1,6 @@
 import steem from 'steem';
 import moment from 'moment';
+import axios from 'axios';
 
 import 'babel-polyfill';
 
@@ -114,6 +115,7 @@ function aboutPost(
         }).length === requiredTags.length
       );
 
+      console.log(result.children);
       const isCheetah = !(
         result.active_votes.filter(data => {
           if (data.voter === 'cheetah') {
@@ -193,25 +195,33 @@ function weightageForPost(
   optimumLength
 ) {
   if (postLength < minimumLength) {
-    // 10% VP
-    return 10 * 100;
+    // 0% VP
+    return 0;
   } else if (postLength < optimumLength) {
-    // 10% ~ 80% VP
+    // 15% ~ 80% VP
     return parseInt(
       (postLength - minimumLength) /
         (optimumLength - minimumLength) *
-        10 *
+        15 *
         100 +
-        10 * 100
+        15 * 100
     );
   } else {
-    // 20% VP
-    return 20 * 100;
+    // 25% VP
+    return 30 * 100;
   }
 }
 
 function beautifyDate(isoDate) {
   return moment(isoDate).fromNow();
+}
+
+function getComment(author, permlink) {
+  return axios
+    .get(
+      `https://api.steemjs.com/get_content_replies?author=${author}&permlink=${permlink}`
+    )
+    .then(data => data.data);
 }
 
 export {
@@ -220,5 +230,6 @@ export {
   upvote,
   checkPostAge,
   weightageForPost,
-  beautifyDate
+  beautifyDate,
+  getComment
 };
