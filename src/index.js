@@ -202,9 +202,9 @@ function weightageForPost(
     return parseInt(
       (postLength - minimumLength) /
         (optimumLength - minimumLength) *
-        10 *
+        20 *
         100 +
-        20 * 100
+        10 * 100
     );
   } else {
     // 30% VP
