@@ -36,6 +36,7 @@ function main(author, permlink, config) {
         isCheetah,
         isUnwantedTagExist,
         isRequiredTagNotExist,
+        isConsideredTagExist,
         articleLength
       } = data;
       if (isCheetah) {

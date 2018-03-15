@@ -29,20 +29,20 @@ const config = {
 };
 
 main('cicbar', 'steemit-necessary-changes', config).then(
-  data => console.log(data)
+  data => console.log(`end: ${data.msg}`)
 );
 
-import steem from 'steem';
+// import steem from 'steem';
 
-getComment(
-  'nikisteem',
-  'why-i-love-eating-eggs-on-keto'
-).then(data => {
-  // console.log(data);
-  console.log(
-    !(
-      data.filter(comment => comment.author === 'cheetah')
-        .length === 0
-    )
-  );
-});
+// getComment(
+//   'nikisteem',
+//   'why-i-love-eating-eggs-on-keto'
+// ).then(data => {
+//   // console.log(data);
+//   console.log(
+//     !(
+//       data.filter(comment => comment.author === 'cheetah')
+//         .length === 0
+//     )
+//   );
+// });

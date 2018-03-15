@@ -47,6 +47,7 @@ function main(author, permlink, config) {
         isCheetah = data.isCheetah,
         isUnwantedTagExist = data.isUnwantedTagExist,
         isRequiredTagNotExist = data.isRequiredTagNotExist,
+        isConsideredTagExist = data.isConsideredTagExist,
         articleLength = data.articleLength;
 
     if (isCheetah) {
