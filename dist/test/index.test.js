@@ -26,14 +26,13 @@ var config = {
   minimumLength: 250,
   optimumLength: 4000,
   unwantedTags: ['steepshot', 'dmania', 'decentmeme', 'nsfw'],
-  requiredTags: ['teammalaysia']
+  requiredTags: ['teammalaysia'],
+  consideredTags: ['bitcoin', 'cryptocurrency']
 };
 
-// main(
-//   'nikisteem',
-//   'why-i-love-eating-eggs-on-keto',
-//   config
-// ).then(data => console.log(data));
+(0, _index.main)('cicbar', 'steemit-necessary-changes', config).then(function (data) {
+  return console.log(data);
+});
 
 (0, _index.getComment)('nikisteem', 'why-i-love-eating-eggs-on-keto').then(function (data) {
   // console.log(data);

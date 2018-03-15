@@ -3,7 +3,8 @@ import {
   aboutPost,
   checkPostAge,
   weightageForPost,
-  beautifyDate
+  beautifyDate,
+  getComment
 } from '../index';
 import regexTest from './regex.test';
 import { main, upvote } from '../index';
@@ -17,12 +18,31 @@ const config = {
   minimumPostAge: 1800000,
   minimumLength: 250,
   optimumLength: 4000,
-  unwantedTags: ['steepshot', 'dmania', 'decentmeme'],
-  requiredTags: ['teammalaysia']
+  unwantedTags: [
+    'steepshot',
+    'dmania',
+    'decentmeme',
+    'nsfw'
+  ],
+  requiredTags: ['teammalaysia'],
+  consideredTags: ['bitcoin', 'cryptocurrency']
 };
 
-main(
-  'superoo7',
-  'my-heart-will-go-on-harmonica-version',
-  config
-).then(data => console.log(data));
+main('cicbar', 'steemit-necessary-changes', config).then(
+  data => console.log(data)
+);
+
+import steem from 'steem';
+
+getComment(
+  'nikisteem',
+  'why-i-love-eating-eggs-on-keto'
+).then(data => {
+  // console.log(data);
+  console.log(
+    !(
+      data.filter(comment => comment.author === 'cheetah')
+        .length === 0
+    )
+  );
+});

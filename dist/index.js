@@ -31,10 +31,12 @@ function main(author, permlink, config) {
       _config$unwantedTags = config.unwantedTags,
       unwantedTags = _config$unwantedTags === undefined ? [] : _config$unwantedTags,
       _config$requiredTags = config.requiredTags,
-      requiredTags = _config$requiredTags === undefined ? [] : _config$requiredTags;
+      requiredTags = _config$requiredTags === undefined ? [] : _config$requiredTags,
+      _config$consideredTag = config.consideredTags,
+      consideredTags = _config$consideredTag === undefined ? [] : _config$consideredTag;
 
 
-  return aboutPost(author, permlink, unwantedTags, requiredTags).then(function (data) {
+  return aboutPost(author, permlink, unwantedTags, requiredTags, consideredTags).then(function (data) {
     if (data === 'POST_NOT_FOUND') {
       return { msg: 'POST_NOT_FOUND' };
     }
@@ -51,6 +53,8 @@ function main(author, permlink, config) {
       return { msg: 'CHEETAH' };
     } else if (isUnwantedTagExist) {
       return { msg: 'UNWANTED_TAGS' };
+    } else if (isConsideredTagExist) {
+      return { msg: 'CONSIDERED_TAGS' };
     } else if (isRequiredTagNotExist) {
       return { msg: 'REQUIRED_TAGS' };
     } else if (checkPostAge(created, maximumPostAge, minimumPostAge)) {
@@ -76,6 +80,7 @@ function main(author, permlink, config) {
 function aboutPost(author, permlink) {
   var unwantedTags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   var requiredTags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  var consideredTags = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
 
   return new Promise(function (resolve, reject) {
     _steem2.default.api.getContent(author, permlink, function (err, result) {
@@ -84,6 +89,12 @@ function aboutPost(author, permlink) {
       }
 
       var tags = JSON.parse(result.json_metadata).tags;
+      var isConsideredTagExist = !(tags.filter(function (tag) {
+        if (consideredTags.includes(tag)) {
+          return true;
+        }
+        return false;
+      }).length === 0);
       var isUnwantedTagExist = !(tags.filter(function (tag) {
         if (unwantedTags.includes(tag)) {
           return true;
@@ -116,6 +127,7 @@ function aboutPost(author, permlink) {
         created: result.created,
         isCheetah: isCheetah,
         isUnwantedTagExist: isUnwantedTagExist,
+        isConsideredTagExist: isConsideredTagExist,
         isRequiredTagNotExist: isRequiredTagNotExist,
         articleLength: articleLength
       });

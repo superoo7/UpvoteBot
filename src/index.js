@@ -13,14 +13,16 @@ function main(author, permlink, config) {
     minimumLength,
     optimumLength,
     unwantedTags = [],
-    requiredTags = []
+    requiredTags = [],
+    consideredTags = []
   } = config;
 
   return aboutPost(
     author,
     permlink,
     unwantedTags,
-    requiredTags
+    requiredTags,
+    consideredTags
   )
     .then(data => {
       if (data === 'POST_NOT_FOUND') {
@@ -40,6 +42,8 @@ function main(author, permlink, config) {
         return { msg: 'CHEETAH' };
       } else if (isUnwantedTagExist) {
         return { msg: 'UNWANTED_TAGS' };
+      } else if (isConsideredTagExist) {
+        return { msg: 'CONSIDERED_TAGS' };
       } else if (isRequiredTagNotExist) {
         return { msg: 'REQUIRED_TAGS' };
       } else if (
@@ -78,7 +82,8 @@ function aboutPost(
   author,
   permlink,
   unwantedTags = [],
-  requiredTags = []
+  requiredTags = [],
+  consideredTags = []
 ) {
   return new Promise(function(resolve, reject) {
     steem.api.getContent(author, permlink, function(
@@ -95,6 +100,14 @@ function aboutPost(
       }
 
       let tags = JSON.parse(result.json_metadata).tags;
+      const isConsideredTagExist = !(
+        tags.filter(tag => {
+          if (consideredTags.includes(tag)) {
+            return true;
+          }
+          return false;
+        }).length === 0
+      );
       const isUnwantedTagExist = !(
         tags.filter(tag => {
           if (unwantedTags.includes(tag)) {
@@ -133,6 +146,7 @@ function aboutPost(
         created: result.created,
         isCheetah,
         isUnwantedTagExist,
+        isConsideredTagExist,
         isRequiredTagNotExist,
         articleLength
       });
