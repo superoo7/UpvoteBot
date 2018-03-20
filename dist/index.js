@@ -52,6 +52,7 @@ function main(author, permlink, config) {
 
     if (isCheetah) {
       return { msg: 'CHEETAH' };
+
     } else if (isUnwantedTagExist) {
       return { msg: 'UNWANTED_TAGS' };
     } else if (isConsideredTagExist) {

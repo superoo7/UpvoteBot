@@ -9,8 +9,10 @@ import {
 import regexTest from './regex.test';
 import { main, upvote } from '../index';
 
+
 // REGEX TEST
 regexTest();
+
 
 // main
 const config = {
@@ -28,9 +30,11 @@ const config = {
   consideredTags: ['bitcoin', 'cryptocurrency']
 };
 
+
 main('cicbar', 'steemit-necessary-changes', config).then(
   data => console.log(`end: ${data.msg}`)
 );
+
 
 // import steem from 'steem';
 

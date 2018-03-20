@@ -54,7 +54,9 @@ function main(author, permlink, config) {
           minimumPostAge
         )
       ) {
+        
         // 3.5 days or 30 minutes
+
         return { msg: 'OLD_POST' };
       } else {
         let createdTime = beautifyDate(created);
@@ -202,6 +204,7 @@ function checkPostAge(
     Date.now() - unixDate > maximumPostAge ||
     Date.now() - unixDate < minimumPostAge
   );
+
 }
 
 function weightageForPost(
@@ -228,6 +231,7 @@ function weightageForPost(
 }
 
 function beautifyDate(isoDate) {
+
   return moment(isoDate).fromNow();
 }
 
@@ -237,6 +241,7 @@ function getComment(author, permlink) {
       `https://api.steemjs.com/get_content_replies?author=${author}&permlink=${permlink}`
     )
     .then(data => data.data);
+
 }
 
 export {
