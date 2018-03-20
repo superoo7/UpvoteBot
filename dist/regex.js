@@ -8,6 +8,19 @@ Object.defineProperty(exports, "__esModule", {
 // MAIN
 // BODY->IMAGE->
 
+function wordParser(textBody) {
+  var r = new RegExp('[A-Za-z0-9_]+|' + // ASCII letters (no accents)
+  '[\u3040-\u309F]+|' + // Hiragana
+  '[\u30A0-\u30FF]+|' + // Katakana
+  '[\u4E00-\u9FFF\uF900-\uFAFF\u3400-\u4DBF]', // Single CJK ideographs
+  'g');
+
+  var bodyParser1 = imageParser(textBody);
+  var bodyParser2 = linkParser(bodyParser1);
+
+  return bodyParser2.match(r).length;
+}
+
 // IMAGE: ![]()
 
 function imageParser(textBody) {
@@ -33,6 +46,7 @@ function breakLineParser(textBody) {
   return;
 }
 
+exports.wordParser = wordParser;
 exports.imageParser = imageParser;
 exports.linkParser = linkParser;
 exports.divParser = divParser;

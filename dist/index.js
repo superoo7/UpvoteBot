@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.beautifyDate = exports.weightageForPost = exports.checkPostAge = exports.upvote = exports.aboutPost = exports.main = undefined;
+exports.getComment = exports.beautifyDate = exports.weightageForPost = exports.checkPostAge = exports.upvote = exports.aboutPost = exports.main = undefined;
 
 var _steem = require('steem');
 
@@ -12,6 +12,10 @@ var _steem2 = _interopRequireDefault(_steem);
 var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
+
+var _axios = require('axios');
+
+var _axios2 = _interopRequireDefault(_axios);
 
 require('babel-polyfill');
 
@@ -23,25 +27,40 @@ function main(author, permlink, config) {
   var maximumPostAge = config.maximumPostAge,
       minimumPostAge = config.minimumPostAge,
       minimumLength = config.minimumLength,
-      optimumLength = config.optimumLength;
+      optimumLength = config.optimumLength,
+      _config$unwantedTags = config.unwantedTags,
+      unwantedTags = _config$unwantedTags === undefined ? [] : _config$unwantedTags,
+      _config$requiredTags = config.requiredTags,
+      requiredTags = _config$requiredTags === undefined ? [] : _config$requiredTags,
+      _config$consideredTag = config.consideredTags,
+      consideredTags = _config$consideredTag === undefined ? [] : _config$consideredTag;
 
 
-  return aboutPost(author, permlink).then(function (data) {
-    console.log(data);
+  return aboutPost(author, permlink, unwantedTags, requiredTags, consideredTags).then(function (data) {
     if (data === 'POST_NOT_FOUND') {
       return { msg: 'POST_NOT_FOUND' };
     }
-
+    console.log(data);
     var author = data.author,
         permlink = data.permlink,
         created = data.created,
         isCheetah = data.isCheetah,
+        isUnwantedTagExist = data.isUnwantedTagExist,
+        isRequiredTagNotExist = data.isRequiredTagNotExist,
+        isConsideredTagExist = data.isConsideredTagExist,
         articleLength = data.articleLength;
 
     if (isCheetah) {
       return { msg: 'CHEETAH' };
+
+    } else if (isUnwantedTagExist) {
+      return { msg: 'UNWANTED_TAGS' };
+    } else if (isConsideredTagExist) {
+      return { msg: 'CONSIDERED_TAGS' };
+    } else if (isRequiredTagNotExist) {
+      return { msg: 'REQUIRED_TAGS' };
     } else if (checkPostAge(created, maximumPostAge, minimumPostAge)) {
-      // 3.5 days
+      // 3.5 days or 30 minutes
       return { msg: 'OLD_POST' };
     } else {
       var createdTime = beautifyDate(created);
@@ -60,14 +79,41 @@ function main(author, permlink, config) {
 }
 
 // ABOUT THE POST
-
 function aboutPost(author, permlink) {
+  var unwantedTags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var requiredTags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  var consideredTags = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+
   return new Promise(function (resolve, reject) {
     _steem2.default.api.getContent(author, permlink, function (err, result) {
       if (err || result.id === 0 && result.author === '' && result.permlink === '') {
         reject('ERROR');
       }
 
+      var tags = JSON.parse(result.json_metadata).tags;
+      var isConsideredTagExist = !(tags.filter(function (tag) {
+        if (consideredTags.includes(tag)) {
+          return true;
+        }
+        return false;
+      }).length === 0);
+      var isUnwantedTagExist = !(tags.filter(function (tag) {
+        if (unwantedTags.includes(tag)) {
+          return true;
+        }
+        return false;
+      }).length === 0);
+      console.log(requiredTags);
+      console.log(tags);
+      var isRequiredTagNotExist = !(tags.filter(function (tag) {
+        if (requiredTags.includes(tag)) {
+          console.log(tag);
+          return true;
+        }
+        return false;
+      }).length === requiredTags.length);
+
+      console.log(result.children);
       var isCheetah = !(result.active_votes.filter(function (data) {
         if (data.voter === 'cheetah') {
           return true;
@@ -75,15 +121,16 @@ function aboutPost(author, permlink) {
         return false;
       }).length === 0);
 
-      var bodyParse1 = (0, _regex.imageParser)(result.body);
-      var bodyParse2 = (0, _regex.linkParser)(bodyParse1);
-      var articleLength = bodyParse2.length;
+      var articleLength = (0, _regex.wordParser)(result.body);
 
       resolve({
         author: result.author,
         permlink: permlink,
         created: result.created,
         isCheetah: isCheetah,
+        isUnwantedTagExist: isUnwantedTagExist,
+        isConsideredTagExist: isConsideredTagExist,
+        isRequiredTagNotExist: isRequiredTagNotExist,
         articleLength: articleLength
       });
     });
@@ -114,25 +161,31 @@ function upvote(steem_posting_key, steem_username, author, permlink, weightage) 
 
 function checkPostAge(isoDate, maximumPostAge, minimumPostAge) {
   var unixDate = new Date(isoDate.replace(/-/g, '/').replace('T', ' ').replace('Z', ''));
+
   return Date.now() - unixDate > maximumPostAge || Date.now() - unixDate < minimumPostAge;
 }
 
 function weightageForPost(postLength, minimumLength, optimumLength) {
   if (postLength < minimumLength) {
-    // 10% VP
-    return 10 * 100;
+    // 0% VP
+    return 0;
   } else if (postLength < optimumLength) {
-    // 10% ~ 80% VP
-    return parseInt((postLength - minimumLength) / (optimumLength - minimumLength) * 70 * 100 + 10 * 100);
+    // 10% ~ 30% VP
+    return parseInt((postLength - minimumLength) / (optimumLength - minimumLength) * 20 * 100 + 10 * 100);
   } else {
-    // 80% VP
-    return 80 * 100;
+    // 30% VP
+    return 30 * 100;
   }
 }
 
 function beautifyDate(isoDate) {
-  var unixDate = new Date(isoDate.replace(/-/g, '/').replace('T', ' ').replace('Z', ''));
-  return (0, _moment2.default)(unixDate).fromNow();
+  return (0, _moment2.default)(isoDate).fromNow();
+}
+
+function getComment(author, permlink) {
+  return _axios2.default.get('https://api.steemjs.com/get_content_replies?author=' + author + '&permlink=' + permlink).then(function (data) {
+    return data.data;
+  });
 }
 
 exports.main = main;
@@ -141,4 +194,5 @@ exports.upvote = upvote;
 exports.checkPostAge = checkPostAge;
 exports.weightageForPost = weightageForPost;
 exports.beautifyDate = beautifyDate;
+exports.getComment = getComment;
 //# sourceMappingURL=index.js.map

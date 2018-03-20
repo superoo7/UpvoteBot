@@ -26,10 +26,10 @@ const util = require('steem-upvote-util');
 const author = 'superoo7';
 const permlink = 'gopro-hero-6-2018-02-13-09-33-41';
 const config = {
-  maximumPostAge: 302400000, // 3.5 days
-  minimumPostAge: 1800000, // 30 minutes
-  minimumLength: 250, // 250 characters
-  optimumLength: 4000 // 4000 characters
+  maximumPostAge: 302400000,
+  minimumPostAge: 1800000,
+  minimumLength: 250,
+  optimumLength: 4000
 };
 
 util.main(author, permlink, config).then(data => console.log(data));
